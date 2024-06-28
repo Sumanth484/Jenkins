@@ -37,3 +37,8 @@ Next, edit the inbound rules of the security group associated with your EC2 inst
 Open your web browser and navigate to the Jenkins server using the public IP address of your EC2 instance:
 
 http://<'EC2 public IP'>:8080
+
+## Step 6:Jenkins UI
+
+Install suggested plugins and set the username and password if required...
+You are now successfully logged into Jenkins UI.
