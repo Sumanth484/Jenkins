@@ -1,0 +1,44 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/jenkins-docs/simple-java-maven-app.git'
+                // Replace with your actual Git repository URL
+            }
+        }
+        
+        stage('Build Project 1') {
+            steps {
+                
+                // Change directory to project1
+                sh 'whoami'
+                sh 'mvn clean package'
+                sh 'mvn test'
+                // Run Maven build for project1
+            }
+        }
+        
+        
+        // Add stages for other projects if needed
+        
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+                // Archive all JAR files generated from all projects
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline successfully completed!'
+            // Post-build actions for success
+        }
+        failure {
+            echo 'Pipeline failed :('
+            // Post-build actions for failure
+        }
+    }
+}
