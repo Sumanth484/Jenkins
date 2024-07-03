@@ -12,6 +12,7 @@ Now add the jenkins user to docker group by using below command.This step will p
 
 ```sh
 sudo usermod -aG docker jenkins
+systemctl restart docker
 ```
 
 Close the SSH session and connect again to reflect the changes.
