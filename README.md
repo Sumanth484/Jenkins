@@ -38,6 +38,13 @@ Open your web browser and navigate to the Jenkins server using the public IP add
 
 http://<'EC2 public IP'>:8080
 
+## Step 6: Set up the password
+Navigate to the EC2 instance and execute the below command to fetch the password.
+
+```sh
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
 ## Step 6:Jenkins UI
 
 Install suggested plugins and set the username and password if required...
