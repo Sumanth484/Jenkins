@@ -1,0 +1,47 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/Sumanth484/Static-Websites-Hosting-AWS.git', branch: 'main', credentialsId: ''
+                // Replace with your actual Git repository URL
+            }
+        }
+        
+        
+        stage('Build docker image') {
+            
+            environment {
+		//BUILD_NUMBER takes the number from the build
+                DOCKER_IMAGE = "sumanth484/amazon-clone:v${BUILD_NUMBER}"
+
+		//Create docker-cred credentials in Jenkins credentials
+                REGISTRY_CREDENTIALS = credentials('docker-cred')
+            }
+            
+            steps {
+                script {
+                    sh 'cd Amazon-Clone/ && docker build -t ${DOCKER_IMAGE} .'
+                    def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        
+        
+    }
+    
+    post {
+        success {
+            echo 'Pipeline successfully completed!'
+            // Post-build actions for success
+        }
+        failure {
+            echo 'Pipeline failed :('
+            // Post-build actions for failure
+        }
+    }
+}
