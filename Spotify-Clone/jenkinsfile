@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Sumanth484/Static-Websites-Hosting-AWS.git', branch: 'main', credentialsId: ''
+                //git url: 'https://github.com/Sumanth484/Static-Websites-Hosting-AWS.git', branch: 'main', credentialsId: ''
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'Git-Hub', url: 'https://github.com/Sumanth484/Jenkins.git']])
                 // Replace with your actual Git repository URL
             }
         }
