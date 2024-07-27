@@ -50,4 +50,3 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 Install suggested plugins and set the username and password if required...
 You are now successfully logged into Jenkins UI.
 
-
