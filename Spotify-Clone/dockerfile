@@ -1,0 +1,22 @@
+# Use an official Nginx image as the base image
+FROM nginx:latest
+
+# Install git
+RUN apt-get update && apt-get install -y git
+
+# Set the working directory
+WORKDIR /app
+
+# Clone the repository
+RUN git clone https://github.com/Sumanth484/Static-Websites-Hosting-AWS.git
+
+RUN rm -rf /usr/share/nginx/html/*
+
+RUN mv /app/Static-Websites-Hosting-AWS/Spotify-Clone/* /usr/share/nginx/html/
+
+
+# Expose port 80
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

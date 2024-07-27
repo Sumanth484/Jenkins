@@ -1,0 +1,152 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
+
+*{
+    padding:0;
+    margin:0;
+    box-sizing:border-box;
+}
+
+body {
+    background-color: #F6F7EB;
+    font-family: "Libre Baskerville", serif;
+}
+
+header {
+    position: sticky;
+    top: 0px;
+}
+nav {
+    font-family: "Ubuntu", sans-serif;
+    background-color: #0E0F19;
+    color:lawngreen;
+    
+   
+}
+
+    nav ul {
+        height: 8vh;
+        display: flex;
+        align-items: center;
+        list-style: none;
+    }
+    nav ul li{
+        padding:12px;
+    }
+        nav ul li:hover{
+            cursor:pointer;
+            opacity:0.9;
+        }
+
+.logo{
+    display:flex;
+    align-items:center;
+}
+    .logo:hover{
+        cursor:pointer;
+        border:1px solid lightgreen;
+    }
+
+    .logo img {
+        height:50px;
+        width:50px;
+        
+    }
+    .logo span {
+        font-size: large;
+        padding: 8px;
+        font-weight:bold;
+    }
+
+.content{
+    height:80vh;
+    background-color:black;
+    color:white;
+    display:flex;
+    margin:20px auto;
+    width:70%;
+    border-radius:20px;
+    padding:10px;
+    background-image:url('bg.jpg');
+    background-size:cover;
+}
+
+.song-list-container{
+    margin:30px;
+}
+
+.song-item{
+    height:30px;
+    width:75%;
+    background-color:white;
+    color:black;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin:12px 0px;
+    border-radius:20px;
+    font-size:small;
+}
+.song-item img{
+    height:25px;
+    margin:0 5px;
+    border-radius:30%;
+}
+.time-stamp{
+    margin:0 30px;
+}
+.song-icon{
+    font-size:large;
+    margin-right:30px;
+}
+
+.song-icon:hover{
+    cursor:pointer;
+}
+
+.footer{
+    height:15vh;
+    position:sticky;
+    bottom:0px;
+    background-color:black;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    margin-top:8px;
+}
+
+
+#progressbar{
+    width:80vw;
+    cursor:pointer;
+}
+.icons{
+    color:antiquewhite;
+    font-size:xx-large;
+    margin-top:10px;
+}
+.icons i{
+    cursor:pointer;
+}
+
+.song-info{
+    height:40px;
+    position:absolute;
+    left:10vw;
+    color:white;
+    display:flex;
+    align-items:center;
+
+}
+
+.song-info img{
+    height:20px;
+    opacity:0;
+    transition:opacity 0.3s ease-in;
+}
+
+    .song-info span {
+        margin:7px 0 0 5px;
+        font-size:small;
+    }
