@@ -10,7 +10,7 @@ Update the package lists and install Java.
 
 ```sh
 sudo apt update
-sudo apt-get install openjdk-17-jre
+sudo apt-get install -y openjdk-17-jre
 ```
 ## Step 3: Install Jenkins
 Run the following commands to install Jenkins:
