@@ -1,0 +1,112 @@
+
+//This pipeline builds and runs test cases on the python project
+
+pipeline {
+    agent 
+    {
+        docker {
+            image 'sumanth484/nodejs-npm:v17' // Use a Docker image with python
+            args '-u root -v /var/run/docker.sock:/var/run/docker.sock' // user argument passed to docker run command
+        }
+    }
+
+    environment {
+        CI = 'false'
+
+	//BUILD_NUMBER takes the number from the build
+        DOCKER_IMAGE = "sumanth484/netflix-clone:v${BUILD_NUMBER}"
+
+	//Create docker-cred credentials in Jenkins credentials
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
+
+	    SONAR_URL = "http://23.20.240.181:9000"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'Git-Hub', url: 'https://github.com/Sumanth484/Netflix-Clone.git']])
+            }
+        }
+        
+        stage('Installing requirements') {
+            steps {
+                sh '''
+                    npm install
+                    npm install -g sonar-scanner
+                '''
+            }
+        }
+
+	stage('Running Test cases') {
+            steps {
+                sh '''
+                    npm test -- MyComponent.test.js
+                '''
+            }
+        }
+
+	stage('Static Code Analysis') {
+            steps {
+        	withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
+          	    sh '''
+                    sonar-scanner \
+                        -Dsonar.projectKey=netflix-clone \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONAR_URL} \
+                        -Dsonar.login=$SONAR_AUTH_TOKEN
+                    '''
+        		}
+      		}
+    	}
+
+        stage('Build Application') {
+            steps {
+                sh '''
+                    npm run build
+                '''
+            }
+        }
+                
+        stage('Build docker image') {
+            
+            steps {
+                script {
+                    sh 'docker build -t ${DOCKER_IMAGE} .'
+                }
+            }
+        }
+
+	    stage('Scan Docker Image') {
+            steps {
+                script {
+                    sh 'trivy image ${DOCKER_IMAGE}'
+                }
+            }
+        }
+
+	    stage('push docker image') {
+            
+            steps {
+                script {
+		            def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                        dockerImage.push()
+                    }
+                }
+            }
+        } 
+    }
+    
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline execution failed.'
+        }
+    }
+}
