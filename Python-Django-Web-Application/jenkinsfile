@@ -37,7 +37,7 @@ pipeline {
             }
         }
         
-        stage('Build docker image') {
+        stage('Build and push docker image') {
             
             environment {
 		//BUILD_NUMBER takes the number from the build
