@@ -44,8 +44,6 @@ systemctl restart docker
 
 ## Step 5: Configure Git-Hub webhook and jenkins Pipeline
 
-# Steps to Configure GitHub Webhook and Jenkins Job
-
 ## 1. Configure GitHub Webhook
 
 ### Navigate to Your GitHub Repository:
