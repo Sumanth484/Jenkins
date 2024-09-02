@@ -1,0 +1,124 @@
+pipeline {
+    agent any
+    
+    tools{
+        jdk 'jdk17'
+        maven 'maven'
+    }
+    
+    environment {
+        SCANNER_HOME= tool 'sonar-scanner'
+        DOCKER_IMAGE= "sumanth484/ekart:v${BUILD_NUMBER}"
+        REGISTRY_CREDENTIALS = credentials('docker-cred')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sumanth484/Ekart.git']])
+            }
+        }
+        
+         stage('TRIVY FS SCAN') {
+            steps {
+                sh "trivy fs ."
+            }
+        }
+        
+        stage('Dependency checker') {
+            steps {
+                dependencyCheck additionalArguments: '--scan .', odcInstallation: 'OWASP'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+            }
+        }
+
+        
+        stage('Compile') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'mvn package -DskipTests=true'
+            }
+        }
+        
+        stage('Sonar Analysis') {
+            steps {
+                withSonarQubeEnv('sonar') {
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=EKART \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectKey=EKART'''
+                }
+            }
+        }
+        
+        stage('Deploy to Nexus') {
+            steps {
+                withMaven(globalMavenSettingsConfig: 'maven-global') {
+                    
+                    sh 'mvn deploy -DskipTests=true'
+                }
+            }
+        }
+        
+        
+        
+        stage('Build docker image') {
+            
+            steps {
+                script {
+                    sh 'docker build -t ${DOCKER_IMAGE} -f  docker/Dockerfile .'
+                }
+            }
+        }
+        
+        stage('Scan Docker Image') {
+            steps {
+                script {
+                    sh 'trivy image ${DOCKER_IMAGE}'
+                }
+            }
+        }
+        
+        
+        
+        stage('push docker image') {
+            
+            steps {
+                script {
+		            def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                        dockerImage.push()
+                    }
+                }
+            }
+        } 
+        
+        stage('deploy docker image') {
+            
+            steps {
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                        sh 'docker run -d --name ekart -p 8070:8070 ${DOCKER_IMAGE}'
+                    }
+                }
+            }
+        } 
+        
+    }
+    
+    post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
+        success {
+            echo 'Pipeline executed successfully!'
+        }
+        failure {
+            echo 'Pipeline execution failed.'
+        }
+    }
+}
